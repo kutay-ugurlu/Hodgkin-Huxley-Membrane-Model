@@ -1,4 +1,4 @@
-function plot_propagation(matrices,targets,titles)
+function plot_propagation(matrices,targets,titles,UI_obj)
 
 n_mat = length(matrices);
 n_targets = length(targets);
@@ -20,8 +20,9 @@ if ~(sum(times-times(1))==0) % if All elements are not same
     error('Matrices have different time instances!');
 end
 
-
-for t = 1:times(1)
+t_total = times(1);
+for t = 1:t_total
+    UI_obj.Text = [num2str(t/t_total*100,3),"% completed."];
     for i = 1:n_mat
         matrix = matrices{i};
         min_mat = min(matrix,[],'all');
@@ -30,7 +31,7 @@ for t = 1:times(1)
             min_mat = 0.9*min_mat;
             max_mat = 1.1*max_mat;
         end
-        plot(targets{i},matrix(t,:))
+        plot(targets{i},matrix(t,:),'Linewidth',3)
         title(targets{i},titles{i})
         ylim manual
         ylim(targets{i},[min_mat,max_mat])
