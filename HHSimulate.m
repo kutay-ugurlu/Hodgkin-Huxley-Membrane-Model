@@ -18,7 +18,7 @@ g_k_bar = 36;
 g_l_bar = 0.3;
 
 % Resting referenced Nernst potential corrections
-V_rest = -90;
+V_rest = -70;
 E_Na = V_rest - E_Na;
 E_l = V_rest - E_l;
 E_K = V_rest - E_K;
