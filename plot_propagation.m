@@ -26,6 +26,10 @@ for t = 1:times(1)
         matrix = matrices{i};
         min_mat = min(matrix,[],'all');
         max_mat = max(matrix,[],'all');
+        if min_mat == max_mat
+            min_mat = 0.9*min_mat;
+            max_mat = 1.1*max_mat;
+        end
         plot(targets{i},matrix(t,:))
         title(targets{i},titles{i})
         ylim manual

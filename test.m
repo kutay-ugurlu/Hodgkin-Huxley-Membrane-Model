@@ -1,10 +1,10 @@
 wipe
 simulation_time = 20;
-stim1mag = 100;
+stim1mag = 20;
 stim1start = 1e-2;
-stim1dur = 0.5;
+stim1dur = 0.2;
 stim1location = 70;
-stim2mag = 100;
+stim2mag = -100;
 stim2start = 3;
 stim2dur = 0.3;
 stim2location = 30;
