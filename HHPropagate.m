@@ -135,7 +135,7 @@ for t = 1:simulation_time_in_samples-1
     end
 end
 
-
+V_membrane(end,:) = vm(end,:) + V_rest;
 
 
 time = [1:simulation_time_in_samples]*dt;
