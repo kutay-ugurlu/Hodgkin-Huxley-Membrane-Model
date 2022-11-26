@@ -1,11 +1,17 @@
 function [time, V_membrane, I_d, I_C, I_Na, I_K, I_L, g_Na, g_K, g_L] = HHSimulate(num_exc, durations, delay, amplitude, if_plot)
-%% Hyperparams
+%% Introduction
+% In this section of the code, the hyperparameters regarding the 
+% update step of the differential equations and length of the simulation is
+% set where t = 10 seconds and dt is 1 milliseconds. 
 simulation_time_in_samples = 1e5;
 dt = 1e-3;
 
 %% Constants
-% Current will be in microamperes, time will be in msec, hence capacitance must
-% be in Farads
+% Current is defined in microamperes, time is defined milliseconds. Hence, 
+% using the relation q = CV and q = it, capacitance per unit area must be defined
+% in microFarads. First Nernst potentials are hardcoded, then they are
+% updated with respect to the resting voltage. Finally, maximum channel
+% conductances are hard coded.
 
 C_m = 1;
 % mV %
@@ -24,10 +30,15 @@ E_l = V_rest - E_l;
 E_K = V_rest - E_K;
 
 %% Vector Initializations 
+% The state variables are initialized with zero first. 
 vm = zeros(1,simulation_time_in_samples);
 Delta_vm = zeros(size(vm));
 
-%% Desing stimulation 
+%% Design stimulation 
+% Depending on the stimulation parameters defined in time,
+%  the stimulation current is designed by converting time instance values
+%  to the discrete sample values and filling the corresponding sample
+%  values with the stimulation intensity. 
 if ischar(num_exc)
     num_exc = str2double(num_exc);
 end
@@ -48,8 +59,11 @@ else
 end
 
 
-
-% Currents
+%% Currents
+% Current vectors are initialized with zero at first. Then, all the
+% activation, inactivation parameters and channel conudctances are initialized
+% with parameters computed for resting potential, _i.e._ 0 deviation from 
+% resting potential. 
 I_Na = zeros(size(vm));
 I_K = zeros(size(vm));
 I_L = zeros(size(vm));
@@ -75,43 +89,57 @@ b_n = b_ni*ones(size(vm));
 b_h = b_hi*ones(size(vm));
 b_m = b_mi*ones(size(vm));
 
-%% Define V_membrane
+%% Define membrane voltage.
+% Membrane voltage is initialized with action potential. 
 
 V_membrane = V_rest*ones(size(vm));
 
 
-%% Action potential 
+%% Action potential generation. 
 for i = 1:simulation_time_in_samples-1
     
+    %% Membrane voltage
+    % Calculate membrane voltage with respect to the extracellular potential.
     V_membrane(i) = vm(i) + V_rest;
     
-    % Calculate conductances
+    %% Conductance
+    % Calculate conductances with the current activation and inactivation
+    % parameters.
     g_Na(i) = g_na_bar*m(i)^3*h(i);
     g_K(i) = g_k_bar*n(i)^4;
     g_L(i) = g_l_bar; % does not change
     
-    % Calculate currents
+    %% Currents
+    % Assuming the Nernst potential remains constant over the time,
+    % calculate the channel currents. Using these and the stimulation
+    % current, calculate the capacitive current. 
     I_Na(i) = g_Na(i) * (V_membrane(i)-E_Na);
     I_K(i) = g_K(i) * (V_membrane(i)-E_K);
     I_L(i) = g_L(i) * (V_membrane(i)-E_l);
     I_C(i) = I_d(i) - (I_Na(i) + I_K(i) + I_L(i));
     I_total(i) = I_d(i);
     
-    % update vm
+    %% Voltage change
+    % Calculate the change in membrane potential using the capacitor charge
+    % equation.
     Delta_vm(i) = dt * I_C(i) / C_m;
     vm(i+1) = vm(i) + Delta_vm(i);
     
-    % calculate params
+    %% Activation and inactivation parameters
+    % Calculate the parameters $\alpha, \beta$ and m, n, h.
     [a_m(i),b_m(i),a_h(i),b_h(i),~,mi,~,hi] = calculate_na_params(vm(i));
     [a_n(i),b_n(i),ni,~] = calculate_k_params(vm(i)); 
           
-    % set m, n, h
+    %% Parameter update
+    % Update the variables that control the channel conductances.
     m(i+1) = m(i) + dt * (a_m(i)*(1 - m(i)) - b_m(i)*m(i));
     n(i+1) = n(i) + dt * (a_n(i)*(1 - n(i)) - b_n(i)*n(i));
     h(i+1) = h(i) + dt * (a_h(i)*(1 - h(i)) - b_h(i)*h(i));
     
 end
-time = [1:simulation_time_in_samples]*dt;
+
+%% Visualization
+time = (1:simulation_time_in_samples)*dt;
 if if_plot == 1
 % figure
 plot(time,V_membrane,'LineWidth',2)
