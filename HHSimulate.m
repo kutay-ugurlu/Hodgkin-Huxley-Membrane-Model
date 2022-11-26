@@ -1,4 +1,9 @@
+%% EE515 Term Project First Stage: AP Generation
+
+%% Kutay Ugurlu 2232841 
+
 function [time, V_membrane, I_d, I_C, I_Na, I_K, I_L, g_Na, g_K, g_L] = HHSimulate(num_exc, durations, delay, amplitude, if_plot)
+
 %% Introduction
 % In this section of the code, the hyperparameters regarding the 
 % update step of the differential equations and length of the simulation is
@@ -151,6 +156,9 @@ ylabel('Current({\mu}A)')
 xlabel('Time(ms)')
 legend('Membrane Potential','Excitation Current','Location','northeastoutside')
 end
+
+%% Final notes: 
+% The project GUI and the guide to use it can be achieved <https://github.com/kutay-ugurlu/Hodgkin-Huxley-Membrane-Model here.> 
 
 end
 
