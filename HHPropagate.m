@@ -32,7 +32,6 @@ re = 1;
 % Current will be in microamperes, time will be in msec, hence capacitance must
 % be in uFarads
 
-C_m = 1;
 % mV %
 E_Na = -115; %Sodium nernst is positive 
 E_K = 12;
@@ -67,6 +66,7 @@ I_K = zeros(size(vm));
 I_L = zeros(size(vm));
 I_C = zeros(size(vm));
 I_total = zeros(size(vm));
+C_m = ones(size(vm));
 
 [a_mi,b_mi,a_hi,b_hi,mi,tau_m,hi,tau_h] = calculate_na_params(0);
 [a_ni,b_ni,ni,tau_n] = calculate_k_params(0);
@@ -121,7 +121,7 @@ for t = 1:simulation_time_in_samples-1
         I_C(t,x) = I_total(t,x) - (I_Na(t,x) + I_K(t,x) + I_L(t,x));
         
         % update vm
-        Delta_vm(t,x) = dt * I_C(t,x) / C_m;
+        Delta_vm(t,x) = dt * I_C(t,x) / C_m(t,x);
         vm(t+1,x) = vm(t,x) + Delta_vm(t,x);
         
         % calculate params
