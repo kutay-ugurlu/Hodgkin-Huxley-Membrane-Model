@@ -20,6 +20,7 @@
 \usepackage{cleveref}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{physics}
 
 \addbibresource{report.bib}
 \title{Hodgkin and Huxley Cell Membrane Model Simulation}
@@ -50,9 +51,9 @@ Voltage clamp is an experimental setup to measure the ionic currents that produc
 The instantaneous conductances of different ion channels are calculated using the following relations:
 
 \begin{align}
-    g_{Na} &= m^3h \overline{g_{Na}} \\
-    g_{K} &= n^4 \overline{g_K} \\
-    g_{L} &= \overline{g_{L}}
+    g_{Na} &= m^3h \overline{g_{Na}} \label{eq:g1}\\
+    g_{K} &= n^4 \overline{g_K} \label{eq:g2}\\
+    g_{L} &= \overline{g_{L}}\label{eq:g3}
 \end{align}
 
 The parameters that control the change of conductances in terms of deviation from membrane voltage, \textit{i.e.} negative depolarization $V_{rest} - V_m$, are also expressed in first order linear differential equations of time as follows:
@@ -60,7 +61,7 @@ The parameters that control the change of conductances in terms of deviation fro
 \begin{align}
     \pdv{n}{t} &= \alpha_n(V_m)(1-n) - \beta_n(V_m)n \label{eqn:pdv1}\\
     \pdv{m}{t} &= \alpha_m(V_m)(1-n) - \beta_m(V_m)n \label{eqn:pdv2}\\
-    \pdv{h}{t} &= \alpha_h(V_m)(1-n) - \beta_h(V_m)n \label{eqn:pdv3}\\
+    \pdv{h}{t} &= \alpha_h(V_m)(1-n) - \beta_h(V_m)n \label{eqn:pdv3}
 \end{align}
 
 where $V_m$ is the deviation. \\
@@ -89,14 +90,42 @@ The activation and inactivation parameters given in \Cref{eqn:pdv1,eqn:pdv2,eqn:
 Employing the node relations on the equivalent circuit, one can derive the relations given in \Cref{eqn:node1,eqn:node2,eqn:node3,eqn:kirch1,eqn:kirch2} for any time, hence any value of negative depolarization.
 
 \begin{align}
-    I_{Na} &= g_{Na}(V_{membrane} - E_{Na}) \label{eqn:node1}\\
-    I_{K} &= g_{K}(V_{membrane} - E_{K}) \label{eqn:node2}\\
-    I_{Cl} &= g_{L}(V_{membrane} - E_{Cl}) \label{eqn:node3}\\
+    I_{Na} &= g_{Na}(V_{membrane} - \mathcal{E}_{Na}) \label{eqn:node1}\\
+    I_{K} &= g_{K}(V_{membrane} - \mathcal{E}_{K}) \label{eqn:node2}\\
+    I_{Cl} &= g_{L}(V_{membrane} - \mathcal{E}_{Cl}) \label{eqn:node3}\\
     I_{ionic} &= I_{Na} + I_{K} + I_{Cl} \label{eqn:kirch1}\\
-    I_{Capacitive} &= I_{total} - I_{ionic} \label{eqn:kirch2}
+    I_{Capacitive} &= I_{total} - I_{ionic} \label{eqn:kirch2}\\
+    \Delta V_m &= I_{Capacitive}(i)dt / C_m; \label{eqn:cap}
 \end{align}
 
 where $I_{total}$ is the stimulation current applied to the cell. 
+
+\subsubsection{Action Potential Propagation}
+
+In addition to the time behavior of an action potential on a single point, the behavior of the action potential  progating on an axon is also important to have a complete understanding of space-time behavior of the action potentials. To derive the formulation that explains such a concept, one needs to model the patch of a membrane.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{1200px-Cable_theory_Neuron_RC_circuit_v3.svg.png}
+\caption{Cable Model \cite{CableTheory}}\label{fig:approp}
+\end{figure}
+
+By using the model illustrated in \Cref{fig:approp}, \Cref*{eqn:cable} can be derived. 
+\begin{equation}
+    \pdv[2]{V_m}{x} = (r_i+r_e) i_m + r_i i_s \label{eqn:cable}
+\end{equation}
+where $i_m$ is the axial current defined from extracellular region to intracellular region and $i_s$ in the input stimulation current. 
+
+Using the general cable equation defined in \Cref{eqn:cable}, \Cref{eqn:num} can be utilized to calculate the current along the entire axon given the stimulation current: 
+
+\begin{equation}
+    I_{total} = I_{stim} + \pdv[2]{V_m}{x} + I_{stim} \frac{r_e}{2\pi a (r_i+r_e)} \label{eqn:num} 
+\end{equation}
+
+In the numerical implementation, however, the second degree partial derivative term should be replaced with its numerical approximation: 
+\begin{equation}
+    \pdv[2]{V_m}{x} = \frac{(V(x-1)-V(x))-(V(x)-V(x+1))}{\Delta x^2}
+\end{equation}
 
 \subsection{Method}
 \subsubsection{Generation}
@@ -104,22 +133,48 @@ where $I_{total}$ is the stimulation current applied to the cell.
 For the generation part of the algorithm, 
 
 \begin{algorithm}
-    \caption{An algorithm with caption}\label{alg:cap}
-    \begin{algorithmic}
-    \Require $n \geq 0$
-    \Ensure $y = x^n$
-    \State $y \gets 1$
-    \State $X \gets x$
-    \State $N \gets n$
-    \While{$N \neq 0$}
-    \If{$N$ is even}
-        \State $X \gets X \times X$
-        \State $N \gets \frac{N}{2}$  \Comment{This is a comment}
-    \ElsIf{$N$ is odd}
-        \State $y \gets y \times X$
-        \State $N \gets N - 1$
-    \EndIf
-    \EndWhile
+    \caption{Action Potential Generation}\label{alg:apgen}
+    \hspace*{\algorithmicindent}\textbf{Input}:\texttt{\#}Stim,Duration,Amplitude\newline
+    \hspace*{\algorithmicindent}\textbf{Output}:Voltage, Current, Conductance
+    \begin{algorithmic}[1]
+    \Procedure{hhiterate}{${V_m}^{i}$} \label{proc:hhiterate}
+        \State Calculate membrane voltage \Comment{$V_m = v_m + \Delta v_m$}. 
+        \State Calculate $g(V_m)$ \Comment{\cref{eq:g1,eq:g2,eq:g3}}
+        \State Calculate ionic currents. \Comment{\cref{eqn:node1,eqn:node2,eqn:node3}}
+        \State Calculate capacitive current. \Comment{\cref{eqn:kirch1,eqn:kirch2}}
+        \State Update $\Delta V_m$ \Comment{\cref{eqn:cap}}.
+        \State Update m,n \& h. \Comment{\cref{eqn:pdv1,eqn:pdv2,eqn:pdv3}}
+        \State \textbf{return} ${V_m}^{i+1}$
+    \EndProcedure \\
+    
+    \Ensure $t_{stimulation} \le t_{simulation}$
+    \State Assign cell parameters. \Comment{$C_m, \overline{g}_{Na,K,Cl}, \mathcal{E}_{Na,K,Cl}$}
+    \State Initialize state vectors. \Comment{$G,m,n,h$}
+    \State Assign initial values using $\alpha(0),\beta(0)$ 
+    \State Design stimulation vector. \Comment{Use $\Delta t$}
+    \For{$i=1, i<=Iteration Steps$}
+        \State ${V_m}^{i+1} =$ \Call{hhiterate}{${V_m}^{i}$}
+    \EndFor
+    \State \textbf{return} $V_m, g, I$
+    \end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}
+    \caption{Action Potential Propagation}\label{alg:approp}
+    \hspace*{\algorithmicindent}\textbf{Input}:\texttt{\#}Stim,Duration,Amplitude\newline
+    \hspace*{\algorithmicindent}\textbf{Output}:Voltage, Current, Conductance
+    \begin{algorithmic}[1]
+    
+    \Ensure $t_{stimulation} \le t_{simulation}$
+    \State Assign cell parameters. \Comment{$C_m, \overline{g}_{Na,K,Cl}, \mathcal{E}_{Na,K,Cl}$}
+    \State Initialize state vectors. \Comment{$G,m,n,h$}
+    \State Assign initial values using $\alpha(0),\beta(0)$ 
+    \State Design stimulation vector. \Comment{Use $\Delta t$}
+    \For{$i=1, i<=Iteration Steps$}
+        \State ${V_m}^{i+1} =$ \Call{hhiterate}{${V_m}^{i}$}
+    \EndFor
+    \State \textbf{return} $V_m, g, I$
     \end{algorithmic}
 \end{algorithm}
 
