@@ -119,20 +119,46 @@ where $i_m$ is the axial current defined from extracellular region to intracellu
 Using the general cable equation defined in \Cref{eqn:cable}, \Cref{eqn:num} can be utilized to calculate the current along the entire axon given the stimulation current: 
 
 \begin{equation}
-    I_{total} = I_{stim} + \pdv[2]{V_m}{x} + I_{stim} \frac{r_e}{2\pi a (r_i+r_e)} \label{eqn:num} 
+    I_{total} = I_{stim} + \frac{\pdv[2]{V_m}{x} + r_eI_{stim}}{2\pi a (r_i+r_e)} \label{eqn:num} 
 \end{equation}
 
 In the numerical implementation, however, the second degree partial derivative term should be replaced with its numerical approximation: 
+
 \begin{equation}
     \pdv[2]{V_m}{x} = \frac{(V(x-1)-V(x))-(V(x)-V(x+1))}{\Delta x^2}
+    \label{eqn:current}
 \end{equation}
 
 \subsection{Method}
+
+\subsubsection{Implementation Environment}
+The software is developed in MATLAB R2022(The MathWorks, Inc., Natick, Massachusetts, United States) along with the graphical user interface. The user interface provides visualizations for selected state vectors along time and space depending on the simulation type. The pseudocode for the software developed is presented in \Cref{alg:apgen,alg:approp}. The screenshots of the graphical user interfaces along with the default inputs that result in outputs that illustrate the main features are presented in \Cref{fig:gui1,fig:gui2}.
+
+
+\clearpage
+
+\onecolumn{
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{GUI1.png}
+    \caption{Action potential propagation software GUI}\label{fig:gui2}
+    \end{figure}
+
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=0.8\textwidth, height=0.3\pdfpageheight]{GUI2.png}
+        \caption{Action potential generation software GUI}\label{fig:gui1}
+        \end{figure}
+}
+
+\twocolumn
+
 \subsubsection{Generation}
 
-For the generation part of the algorithm, 
+For the generation part of the algorithm, the time steps are discretized and the update equations are constructed utilizing the differential \Cref{eqn:pdv1,eqn:pdv2,eqn:pdv3,eqn:cap}.
 
-\begin{algorithm}
+\begin{algorithm}[h]
     \caption{Action Potential Generation}\label{alg:apgen}
     \hspace*{\algorithmicindent}\textbf{Input}:\texttt{\#}Stim,Duration,Amplitude\newline
     \hspace*{\algorithmicindent}\textbf{Output}:Voltage, Current, Conductance
@@ -159,10 +185,14 @@ For the generation part of the algorithm,
     \end{algorithmic}
 \end{algorithm}
 
+\subsubsection{Propagation}
 
-\begin{algorithm}
+The stimulus, conductance and current vectors are now initialized in two dimensions, representing the time and 1 dimensional space that represents the axon axis. Using \Cref{eqn:current}, the current along the axis is calculated for every time step of the simulation and for each location, the \texttt{HHiterate} procedure defined in \Cref{alg:apgen} is called for the voltage update. 
+
+
+\begin{algorithm}[h]
     \caption{Action Potential Propagation}\label{alg:approp}
-    \hspace*{\algorithmicindent}\textbf{Input}:\texttt{\#}Stim,Duration,Amplitude\newline
+    \hspace*{\algorithmicindent}\textbf{Input}:\texttt{\#}Stim,Duration,Amplitude, Axon Length\newline
     \hspace*{\algorithmicindent}\textbf{Output}:Voltage, Current, Conductance
     \begin{algorithmic}[1]
     
@@ -171,13 +201,73 @@ For the generation part of the algorithm,
     \State Initialize state vectors. \Comment{$G,m,n,h$}
     \State Assign initial values using $\alpha(0),\beta(0)$ 
     \State Design stimulation vector. \Comment{Use $\Delta t$}
-    \For{$i=1, i<=Iteration Steps$}
-        \State ${V_m}^{i+1} =$ \Call{hhiterate}{${V_m}^{i}$}
+    \For{$t$: simulation time step}
+    \For{$x$: discretized locations along the axon}
+        \State Calculate current using \Cref{eqn:current}
+        \State Employ \texttt{HHiterate} in \Cref{alg:apgen}
+    \EndFor
     \EndFor
     \State \textbf{return} $V_m, g, I$
     \end{algorithmic}
 \end{algorithm}
 
+To guarantee convergence, the mesh ratio defined in \Cref{eqn:mesh} should be as small as possible:
+
+\begin{equation}
+    mesh ratio = \frac{\Delta t}{r_i c_m \Delta x^2} \label{eqn:mesh}
+\end{equation}
+
+\subsection{Results}
+
+In this section, some characteristic behaviors of the action potentials during their generation and propagations are replicated through the developed software and the corresponding visualizations are going to be presented to illustrate and explain the associated mechanisms.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Fig1.png}
+\caption{Temporal summation}\label{fig:tempsum}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Fig2.png}
+\caption{Frequency modulation}\label{fig:fm}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Fig3.png}
+\caption{Habituation}\label{fig:habit}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Fig4.png}
+\caption{Anode breakdown excitation}\label{fig:abe}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Fig5.png}
+\caption{Relative refractory period}\label{fig:abe}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Fig6.png}
+\caption{Relative refractory period}\label{fig:rrp}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Fig7.png}
+\caption{Action potential latency}\label{fig:apl}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Fig8.png}
+\caption{Action potential threshold}\label{fig:apth}
+\end{figure}
 
 \clearpage
 \printbibliography{}
