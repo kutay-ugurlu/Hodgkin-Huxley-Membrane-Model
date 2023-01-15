@@ -21,6 +21,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{physics}
+\usepackage{lipsum}
 
 \addbibresource{report.bib}
 \title{Hodgkin and Huxley Cell Membrane Model Simulation}
@@ -223,52 +224,61 @@ In this section, some characteristic behaviors of the action potentials during t
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{Fig1.png}
-\caption{Temporal summation}\label{fig:tempsum}
+\includegraphics[width=\textwidth]{Fig5.png}
+\caption{Absolute refractory period}\label{fig:arp}
 \end{figure}
-
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{Fig2.png}
 \caption{Frequency modulation}\label{fig:fm}
 \end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{Fig3.png}
-\caption{Habituation}\label{fig:habit}
-\end{figure}
-
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{Fig4.png}
 \caption{Anode breakdown excitation}\label{fig:abe}
 \end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{Fig5.png}
-\caption{Relative refractory period}\label{fig:abe}
-\end{figure}
-
-\begin{figure}[h]
+\begin{figure*}[h]
 \centering
 \includegraphics[width=\textwidth]{Fig6.png}
 \caption{Relative refractory period}\label{fig:rrp}
+\end{figure*}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Fig1.png}
+\caption{Temporal summation}\label{fig:tempsum}
 \end{figure}
-
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{ts_not.png}
+\caption{Temporal summation under subthreshold condition}\label{fig:ts_not}
+\end{figure}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{Fig3.png}
+\caption{Habituation}\label{fig:habit}
+\end{figure} 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\textwidth]{Fig7.png}
 \caption{Action potential latency}\label{fig:apl}
 \end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{Fig8.png}
-\caption{Action potential threshold}\label{fig:apth}
-\end{figure}
-
+\clearpage
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=\textwidth]{Fig8.png}
+    \caption{Action potential threshold}\label{fig:apth}
+    \end{figure*}
+\newpage
+\subsection{Discussion}
+\subsubsection{Action potential threshold}
+According to Hodgkin Huxley model, the electrically active cells start to fire an action potential after the membrane voltage reaches to a specific value called \textbf{Threshold voltage}. To investigate the value of the threshold voltage that is indirectly defined by the ionic concentrations of the cell, a series of software experiments are done. In \Cref{fig:apth}, one can observe that the cell did not fire an action potential for a membrane voltage of -66mV. In the subfigure at the bottom, however, we observe that there is a sharp increase in the membrane potential starting from arond -65mV. Hence, it can be deduced that the threshold voltage is around -65 mV. It is important to note that the action potential generation does not stop even if the stimulus source is cut. 
+\subsubsection{Absolute refractory period}
+The absolute refractory period is defined as the time period after the repolarization when the cell cannot be excited again even with an abnormally high stimulus current. In \Cref{fig:arp}, we apply a 3$\frac{\mu A}{cm^2}$ stimulus for 5 milliseconds and observe that the action potential was fired. Shortly after that, in the repolarization phase of the cell, we again apply a stimulus, this time 5 times the magnitude of the first tone that started the action potential. However, at this time we observe that the cell did not fire an action potential. Hence, this region is in the absolute refractory period.
+\subsubsection{Frequency Modulation}
+Frequency modulation behavior is defined as higher number of action potentials with response to a higher stimulus at the same time period. In \Cref{fig:fm}, we see that two stimuli with amplitudes 25 and 100$\frac{\mu A}{cm^2}$ are applied to the cell for 40 ms. The higher stimulus resulted in 6 action potentials whereas the lower stimulus caused cell to fire only 4 action potentials. With 4 times higher stimulus, the frequency of action potential generation increased by 50\%. 
+\subsubsection{Anode Breakdown Excitation}
+Anode breakdown excitation describes the action potential generation behavior when the cell returns back to its resting state after excited with a negative stimulation for a time period. In \Cref{fig:abe}, it can be observed that the cell is excited with -2$\frac{\mu A}{cm^2}$ stimulus for 3 milliseconds and the membrane voltage went a little lower than the resting potential. when -35$\frac{\mu A}{cm^2}$ was applied to the cell for 40 milliseconds, the membrane behaved like an RC circuit under subthreshold conditions and the membrane voltage asymptotically approached to approximately -180mV. When the stimulus is cut, the membrane voltage quickly returns to its resting value, however, it overshoots the threshold voltage while doing so. Hence, we observe an action potential generation after the membrane voltage reaches threshold voltage. 
+\subsubsection{Relative refractory period}
 \clearpage
 \printbibliography{}
 \end{document}

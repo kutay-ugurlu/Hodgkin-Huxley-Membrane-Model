@@ -51,9 +51,9 @@ title('Pulse Frequency Modulation with different excitations')
 
 %% Temporal Summation
 figure('Position', pos_vec); % To adjust figsizeclose allclose allsubplot(2,1,1)
-HHSimulate(2,[5 5],2,[2,5],1);
+HHSimulate(2,[5 50],2,[1,3],1);
 % figures(end+1) = gcf;
-title('Temporal Summation causing action potential')
+title('Temporal Summation not causing action potential')
 
 %%
 figHandles = findall(0,'Type','figure'); 
