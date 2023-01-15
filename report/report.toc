@@ -1,0 +1,21 @@
+\contentsline {section}{\numberline {I}Intro}{2}{section.1}%
+\contentsline {subsection}{\numberline {\mbox {I-A}}Voltage Clamp Experiment}{2}{subsection.1.1}%
+\contentsline {section}{\numberline {II}Theory}{2}{section.2}%
+\contentsline {subsection}{\numberline {\mbox {II-A}}Mathematical Model}{2}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {\mbox {II-A}1}Action Potential Propagation}{3}{subsubsection.2.1.1}%
+\contentsline {subsection}{\numberline {\mbox {II-B}}Method}{3}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {\mbox {II-B}1}Implementation Environment}{3}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {\mbox {II-B}2}Generation}{5}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {\mbox {II-B}3}Propagation}{5}{subsubsection.2.2.3}%
+\contentsline {subsection}{\numberline {\mbox {II-C}}Results}{5}{subsection.2.3}%
+\contentsline {subsection}{\numberline {\mbox {II-D}}Discussion}{7}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {\mbox {II-D}1}Action potential threshold}{7}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {\mbox {II-D}2}Absolute refractory period}{7}{subsubsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {\mbox {II-D}3}Frequency Modulation}{7}{subsubsection.2.4.3}%
+\contentsline {subsubsection}{\numberline {\mbox {II-D}4}Anode Breakdown Excitation}{7}{subsubsection.2.4.4}%
+\contentsline {subsubsection}{\numberline {\mbox {II-D}5}Relative refractory period}{8}{subsubsection.2.4.5}%
+\contentsline {subsubsection}{\numberline {\mbox {II-D}6}Temporal Summation}{8}{subsubsection.2.4.6}%
+\contentsline {subsubsection}{\numberline {\mbox {II-D}7}Habituation}{8}{subsubsection.2.4.7}%
+\contentsline {subsubsection}{\numberline {\mbox {II-D}8}Action Potential Latency}{8}{subsubsection.2.4.8}%
+\contentsline {subsubsection}{\numberline {\mbox {II-D}9}Ioinc Channel Conductances}{8}{subsubsection.2.4.9}%
+\contentsline {subsubsection}{\numberline {\mbox {II-D}10}}{8}{subsubsection.2.4.10}%
